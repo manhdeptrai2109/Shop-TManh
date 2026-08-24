@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản trị - Shop Của Mạnh</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #0b0d3b;
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            color: #a855f7;
+        }
+        .card {
+            background: #06082a;
+            border: 1px solid #4e3aa2;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: #c8d0f5;
+        }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-success { background: #16a34a; color: white; }
+        .btn-success:hover { background: #15803d; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-danger:hover { background: #b91c1c; }
+        .btn-warning { background: #f59e0b; color: white; }
+        .btn-warning:hover { background: #d97706; }
+        .btn-sm { padding: 5px 12px; font-size: 12px; }
+        .btn-info { background: #3b82f6; color: white; }
+        .btn-info:hover { background: #2563eb; }
+
+        .table { width: 100%; border-collapse: collapse; }
+        .table th { text-align: left; padding: 10px 8px; color: #888; font-size: 13px; border-bottom: 1px solid #4e3aa2; }
+        .table td { padding: 10px 8px; border-bottom: 1px solid #1a1a4a; font-size: 14px; }
+        .badge { padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .badge-success { background: #16a34a; color: white; }
+        .badge-warning { background: #f59e0b; color: white; }
+        .badge-danger { background: #dc2626; color: white; }
+        .badge-info { background: #3b82f6; color: white; }
+        .text-success { color: #51cf66; }
+        .text-warning { color: #ffd43b; }
+        .text-danger { color: #ff6b6b; }
+        .text-muted { color: #888; }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 16px;
+            background: #0b0d3b;
+            border-radius: 10px;
+            padding: 4px;
+            flex-wrap: wrap;
+        }
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: #888;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+            min-width: 80px;
+        }
+        .tab.active { background: #1a1a5a; color: white; }
+        .tab:hover { color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #1a1a4a;
+        }
+        .user-item:last-child { border-bottom: none; }
+        .user-name { font-weight: bold; font-size: 16px; }
+        .user-balance { font-size: 18px; font-weight: bold; color: #51cf66; }
+
+        .empty { text-align: center; color: #888; padding: 30px 0; }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            color: white;
+            font-weight: bold;
+            z-index: 9999;
+            animation: slideIn 0.3s ease;
+            max-width: 400px;
+        }
+        .toast-success { background: #16a34a; }
+        .toast-error { background: #dc2626; }
+        .toast-info { background: #3b82f6; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            backdrop-filter: blur(8px);
+            animation: popupFadeIn 0.3s ease;
+        }
+        .popup-modal {
+            background: linear-gradient(145deg, #0b0d3b, #03051d);
+            border: 1px solid #833cff;
+            border-radius: 20px;
+            padding: 35px 30px;
+            max-width: 420px;
+            width: 92%;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(112,30,255,0.5);
+            animation: popupScaleIn 0.3s ease;
+        }
+        .popup-modal .icon { font-size: 48px; margin-bottom: 8px; }
+        .popup-modal h2 { color: white; margin: 0 0 6px; font-size: 20px; }
+        .popup-modal p { color: #b0b8e0; margin: 0 0 20px; font-size: 15px; line-height: 1.5; }
+        .popup-modal .buttons { display: flex; gap: 12px; justify-content: center; }
+        .popup-modal .buttons button {
+            flex: 1;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            border: none;
+        }
+        .popup-modal .btn-cancel { background: transparent; border: 1px solid #6a3fff; color: #b0b8e0; }
+        .popup-modal .btn-cancel:hover { background: rgba(106,63,255,0.2); }
+        .popup-modal .btn-confirm { background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; }
+        .popup-modal .btn-confirm:hover { transform: scale(1.02); }
+
+        @keyframes popupFadeIn { from { opacity:0; } to { opacity:1; } }
+        @keyframes popupScaleIn { from { opacity:0; transform:scale(0.9); } to { opacity:1; transform:scale(1); } }
+
+        .form-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .form-group input, .form-group select {
+            flex: 1;
+            padding: 10px 14px;
+            background: #0b0d3b;
+            border: 1px solid #4e3aa2;
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            min-width: 120px;
+        }
+        .form-group select option { background: #0b0d3b; }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #a855f7;
+        }
+
+        @media (max-width: 600px) {
+            .tabs .tab { font-size: 12px; padding: 8px; }
+            .table td, .table th { font-size: 12px; padding: 6px; }
+            .form-group input, .form-group select { min-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🔑 Quản trị Shop Của Mạnh</h1>
+
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('approve')">✅ Duyệt nạp</button>
+        <button class="tab" onclick="switchTab('users')">👤 Danh sách user</button>
+        <button class="tab" onclick="switchTab('history')">📋 Lịch sử</button>
+        <button class="tab" onclick="switchTab('remove')">🗑️ Trừ tiền</button>
+        <button class="tab" onclick="switchTab('add')">➕ Cộng tiền</button>
+    </div>
+
+    <!-- Tab 1: Duyệt nạp tiền -->
+    <div id="tab-approve" class="tab-content active">
+        <div class="card">
+            <h2>📌 Yêu cầu nạp tiền chờ duyệt</h2>
+            <div id="approvalList"><div class="empty">Không có yêu cầu nào đang chờ duyệt.</div></div>
+        </div>
+    </div>
+
+    <!-- Tab 2: Danh sách user -->
+    <div id="tab-users" class="tab-content">
+        <div class="card">
+            <h2>👤 Danh sách tài khoản</h2>
+            <div id="userList"></div>
+        </div>
+    </div>
+
+    <!-- Tab 3: Lịch sử -->
+    <div id="tab-history" class="tab-content">
+        <div class="card">
+            <h2>📋 Lịch sử giao dịch</h2>
+            <button class="btn btn-danger btn-sm" onclick="showConfirmPopup()" style="margin-bottom:12px;">🗑️ Xóa lịch sử</button>
+            <div id="historyList"></div>
+        </div>
+    </div>
+
+    <!-- Tab 4: Trừ tiền -->
+    <div id="tab-remove" class="tab-content">
+        <div class="card">
+            <h2>🗑️ Trừ tiền khỏi tài khoản</h2>
+            <p style="color:#888;font-size:14px;margin-bottom:16px;">
+                Chọn tài khoản và nhập số tiền cần trừ. Hành động này sẽ ghi vào lịch sử.
+            </p>
+            <div class="form-group">
+                <select id="removeUserSelect" style="flex:1.5;">
+                    <option value="">-- Chọn tài khoản --</option>
+                </select>
+                <input type="number" id="removeAmount" placeholder="Số tiền cần trừ" style="flex:1;">
+                <input type="text" id="removeReason" placeholder="Lý do (tùy chọn)" style="flex:1.5;">
+                <button class="btn btn-danger" onclick="removeBalance()">🗑️ Trừ tiền</button>
+            </div>
+            <div style="margin-top:12px;font-size:13px;color:#888;">
+                ⚠️ <strong>Lưu ý:</strong> Hành động này sẽ trừ tiền khỏi số dư của tài khoản và ghi vào lịch sử.
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>📋 Lịch sử trừ tiền</h2>
+            <div id="removeHistoryList"><div class="empty">Chưa có lịch sử trừ tiền.</div></div>
+        </div>
+    </div>
+
+    <!-- Tab 5: Cộng tiền -->
+    <div id="tab-add" class="tab-content">
+        <div class="card">
+            <h2>➕ Cộng tiền vào tài khoản</h2>
+            <p style="color:#888;font-size:14px;margin-bottom:16px;">
+                Chọn tài khoản và nhập số tiền cần cộng. Hành động này sẽ ghi vào lịch sử.
+            </p>
+            <div class="form-group">
+                <select id="addUserSelect" style="flex:1.5;">
+                    <option value="">-- Chọn tài khoản --</option>
+                </select>
+                <input type="number" id="addAmount" placeholder="Số tiền cần cộng" style="flex:1;">
+                <input type="text" id="addReason" placeholder="Lý do (tùy chọn)" style="flex:1.5;">
+                <button class="btn btn-success" onclick="addBalance()">➕ Cộng tiền</button>
+            </div>
+            <div style="margin-top:12px;font-size:13px;color:#888;">
+                💡 <strong>Lưu ý:</strong> Hành động này sẽ cộng tiền vào số dư của tài khoản và ghi vào lịch sử.
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>📋 Lịch sử cộng tiền</h2>
+            <div id="addHistoryList"><div class="empty">Chưa có lịch sử cộng tiền.</div></div>
+        </div>
+    </div>
+
+    <div style="text-align:center;margin-top:20px;">
+        <a href="index.html" style="color:#a855f7;text-decoration:none;">🏠 Quay lại trang chủ</a>
+    </div>
+</div>
+
+<script>
+// ===== HÀM LẤY DỮ LIỆU =====
+function getUsers() {
+    var data = localStorage.getItem('shopCuaManhUsers');
+    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
+    return [];
+}
+
+function getUserBalance(username) {
+    var data = localStorage.getItem('shopCuaManhBalance_' + username);
+    return data ? parseInt(data) : 0;
+}
+
+function setUserBalance(username, amount) {
+    localStorage.setItem('shopCuaManhBalance_' + username, String(amount));
+}
+
+function getRechargeHistory() {
+    var data = localStorage.getItem('rechargeHistory');
+    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
+    return [];
+}
+
+function saveRechargeHistory(history) {
+    localStorage.setItem('rechargeHistory', JSON.stringify(history));
+}
+
+function getRemoveHistory() {
+    var data = localStorage.getItem('removeHistory');
+    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
+    return [];
+}
+
+function saveRemoveHistory(history) {
+    localStorage.setItem('removeHistory', JSON.stringify(history));
+}
+
+function getAddHistory() {
+    var data = localStorage.getItem('addHistory');
+    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
+    return [];
+}
+
+function saveAddHistory(history) {
+    localStorage.setItem('addHistory', JSON.stringify(history));
+}
+
+function getPendingApprovals() {
+    var data = localStorage.getItem('pendingApprovals');
+    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
+    return [];
+}
+
+function savePendingApprovals(approvals) {
+    localStorage.setItem('pendingApprovals', JSON.stringify(approvals));
+}
+
+function getPendingCodes() {
+    var data = localStorage.getItem('pendingRechargeCodes');
+    if (data) { try { return JSON.parse(data); } catch(e) { return []; } }
+    return [];
+}
+
+function formatMoney(n) {
+    return n.toLocaleString('vi-VN') + 'đ';
+}
+
+// ===== POPUP =====
+function closePopup() {
+    var popup = document.querySelector('.popup-overlay');
+    if (popup) popup.remove();
+}
+
+function showConfirmPopup() {
+    var oldPopup = document.querySelector('.popup-overlay');
+    if (oldPopup) oldPopup.remove();
+
+    var overlay = document.createElement('div');
+    overlay.className = 'popup-overlay';
+    overlay.innerHTML = `
+        <div class="popup-modal">
+            <div class="icon">⚠️</div>
+            <h2>Xác nhận xóa</h2>
+            <p>Bạn có chắc muốn xóa toàn bộ lịch sử giao dịch?<br><span style="color:#ff6b6b;font-size:13px;">Hành động này không thể hoàn tác!</span></p>
+            <div class="buttons">
+                <button class="btn-cancel" onclick="closePopup()">❌ Hủy bỏ</button>
+                <button class="btn-confirm" onclick="closePopup(); confirmClearHistory();">🗑️ Xóa</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+}
+
+function confirmClearHistory() {
+    saveRechargeHistory([]);
+    renderAll();
+    showToast('✅ Đã xóa lịch sử!', 'success');
+}
+
+// ===== DUYỆT NẠP TIỀN =====
+function approveRecharge(index) {
+    var approvals = getPendingApprovals();
+    if (index < 0 || index >= approvals.length) return;
+    
+    var approval = approvals[index];
+    
+    var pendingCodes = getPendingCodes();
+    var codeValid = false;
+    for (var i = 0; i < pendingCodes.length; i++) {
+        if (pendingCodes[i].code === approval.code) {
+            codeValid = true;
+            break;
+        }
+    }
+    
+    if (!codeValid) {
+        approvals.splice(index, 1);
+        savePendingApprovals(approvals);
+        renderAll();
+        showToast('⚠️ Mã đã hết hạn! Yêu cầu bị hủy.', 'error');
+        return;
+    }
+    
+    var currentBalance = getUserBalance(approval.username);
+    var newBalance = currentBalance + approval.amount;
+    setUserBalance(approval.username, newBalance);
+    
+    var history = getRechargeHistory();
+    history.push({
+        username: approval.username,
+        code: approval.code,
+        amount: approval.amount,
+        time: new Date().toLocaleString('vi-VN'),
+        status: 'success',
+        type: 'nap'
+    });
+    saveRechargeHistory(history);
+    
+    var pendingCodes = getPendingCodes();
+    var newPending = [];
+    for (var i = 0; i < pendingCodes.length; i++) {
+        if (pendingCodes[i].code !== approval.code) {
+            newPending.push(pendingCodes[i]);
+        }
+    }
+    localStorage.setItem('pendingRechargeCodes', JSON.stringify(newPending));
+    
+    approvals.splice(index, 1);
+    savePendingApprovals(approvals);
+    
+    renderAll();
+    showToast('✅ Đã cộng ' + formatMoney(approval.amount) + ' cho ' + approval.username + '!', 'success');
+}
+
+function rejectRecharge(index) {
+    var approvals = getPendingApprovals();
+    if (index < 0 || index >= approvals.length) return;
+    
+    var approval = approvals[index];
+    
+    if (confirm('Từ chối yêu cầu nạp ' + formatMoney(approval.amount) + ' của ' + approval.username + '?')) {
+        approvals.splice(index, 1);
+        savePendingApprovals(approvals);
+        renderAll();
+        showToast('❌ Đã từ chối yêu cầu của ' + approval.username, 'error');
+    }
+}
+
+// ===== TRỪ TIỀN =====
+function removeBalance() {
+    var username = document.getElementById('removeUserSelect').value;
+    var amount = parseInt(document.getElementById('removeAmount').value);
+    var reason = document.getElementById('removeReason').value.trim() || 'Không có lý do';
+    
+    if (!username) {
+        showToast('⚠️ Vui lòng chọn tài khoản!', 'error');
+        return;
+    }
+    
+    if (!amount || amount <= 0) {
+        showToast('⚠️ Vui lòng nhập số tiền hợp lệ!', 'error');
+        return;
+    }
+    
+    var currentBalance = getUserBalance(username);
+    if (currentBalance < amount) {
+        showToast('⚠️ Số dư không đủ! Hiện tại: ' + formatMoney(currentBalance), 'error');
+        return;
+    }
+    
+    // Xác nhận trừ tiền
+    if (confirm('Bạn có chắc muốn trừ ' + formatMoney(amount) + ' khỏi tài khoản "' + username + '"?')) {
+        var newBalance = currentBalance - amount;
+        setUserBalance(username, newBalance);
+        
+        var removeHistory = getRemoveHistory();
+        removeHistory.push({
+            username: username,
+            amount: amount,
+            reason: reason,
+            time: new Date().toLocaleString('vi-VN')
+        });
+        saveRemoveHistory(removeHistory);
+        
+        var history = getRechargeHistory();
+        history.push({
+            username: username,
+            code: 'REMOVE - ' + reason,
+            amount: -amount,
+            time: new Date().toLocaleString('vi-VN'),
+            status: 'remove',
+            type: 'remove',
+            reason: reason
+        });
+        saveRechargeHistory(history);
+        
+        document.getElementById('removeAmount').value = '';
+        document.getElementById('removeReason').value = '';
+        
+        renderAll();
+        showToast('🗑️ Đã trừ ' + formatMoney(amount) + ' khỏi ' + username + '!', 'info');
+    }
+}
+
+// ===== CỘNG TIỀN =====
+function addBalance() {
+    var username = document.getElementById('addUserSelect').value;
+    var amount = parseInt(document.getElementById('addAmount').value);
+    var reason = document.getElementById('addReason').value.trim() || 'Cộng tiền thủ công';
+    
+    if (!username) {
+        showToast('⚠️ Vui lòng chọn tài khoản!', 'error');
+        return;
+    }
+    
+    if (!amount || amount <= 0) {
+        showToast('⚠️ Vui lòng nhập số tiền hợp lệ!', 'error');
+        return;
+    }
+    
+    // Xác nhận cộng tiền
+    if (confirm('Bạn có chắc muốn cộng ' + formatMoney(amount) + ' vào tài khoản "' + username + '"?')) {
+        var currentBalance = getUserBalance(username);
+        var newBalance = currentBalance + amount;
+        setUserBalance(username, newBalance);
+        
+        var addHistory = getAddHistory();
+        addHistory.push({
+            username: username,
+            amount: amount,
+            reason: reason,
+            time: new Date().toLocaleString('vi-VN')
+        });
+        saveAddHistory(addHistory);
+        
+        var history = getRechargeHistory();
+        history.push({
+            username: username,
+            code: 'ADD - ' + reason,
+            amount: amount,
+            time: new Date().toLocaleString('vi-VN'),
+            status: 'add',
+            type: 'add',
+            reason: reason
+        });
+        saveRechargeHistory(history);
+        
+        document.getElementById('addAmount').value = '';
+        document.getElementById('addReason').value = '';
+        
+        renderAll();
+        showToast('💰 Đã cộng ' + formatMoney(amount) + ' vào ' + username + '!', 'success');
+    }
+}
+
+function updateUserSelects() {
+    var users = getUsers();
+    var selects = ['removeUserSelect', 'addUserSelect'];
+    
+    for (var s = 0; s < selects.length; s++) {
+        var select = document.getElementById(selects[s]);
+        if (!select) continue;
+        var currentValue = select.value;
+        
+        select.innerHTML = '<option value="">-- Chọn tài khoản --</option>';
+        for (var i = 0; i < users.length; i++) {
+            var balance = getUserBalance(users[i].name);
+            var option = document.createElement('option');
+            option.value = users[i].name;
+            option.textContent = users[i].name + ' (Số dư: ' + formatMoney(balance) + ')';
+            if (users[i].name === currentValue) {
+                option.selected = true;
+            }
+            select.appendChild(option);
+        }
+    }
+}
+
+// ===== HIỂN THỊ =====
+function renderApprovals() {
+    var approvals = getPendingApprovals();
+    if (approvals.length === 0) {
+        document.getElementById('approvalList').innerHTML = '<div class="empty">Không có yêu cầu nào đang chờ duyệt.</div>';
+        return;
+    }
+    
+    var html = '<table class="table"><tr><th>Thời gian</th><th>User</th><th>Mã</th><th>Số tiền</th><th>Thao tác</th></tr>';
+    for (var i = 0; i < approvals.length; i++) {
+        var a = approvals[i];
+        html += '<tr>';
+        html += '<td style="font-size:12px;color:#888;">' + a.time + '</td>';
+        html += '<td><strong>' + a.username + '</strong></td>';
+        html += '<td><span class="badge badge-warning">' + a.code + '</span></td>';
+        html += '<td class="text-warning">' + formatMoney(a.amount) + '</td>';
+        html += '<td>';
+        html += '<button class="btn btn-success btn-sm" onclick="approveRecharge(' + i + ')">✅ Duyệt</button> ';
+        html += '<button class="btn btn-danger btn-sm" onclick="rejectRecharge(' + i + ')">❌ Từ chối</button>';
+        html += '</td>';
+        html += '</tr>';
+    }
+    html += '</table>';
+    document.getElementById('approvalList').innerHTML = html;
+}
+
+function renderUsers() {
+    var users = getUsers();
+    var html = '';
+    for (var i = 0; i < users.length; i++) {
+        var balance = getUserBalance(users[i].name);
+        html += '<div class="user-item">';
+        html += '<span class="user-name">👤 ' + users[i].name + '</span>';
+        html += '<span class="user-balance">💰 ' + formatMoney(balance) + '</span>';
+        html += '</div>';
+    }
+    document.getElementById('userList').innerHTML = html || '<div class="empty">Chưa có tài khoản nào.</div>';
+}
+
+function renderHistory() {
+    var history = getRechargeHistory();
+    if (history.length === 0) {
+        document.getElementById('historyList').innerHTML = '<div class="empty">Chưa có lịch sử giao dịch.</div>';
+        return;
+    }
+    var html = '<table class="table"><tr><th>Thời gian</th><th>User</th><th>Loại</th><th>Mã</th><th>Số tiền</th></tr>';
+    for (var i = history.length - 1; i >= 0; i--) {
+        var h = history[i];
+        var isRemove = h.type === 'remove';
+        var isAdd = h.type === 'add';
+        var badgeClass = isRemove ? 'badge-danger' : isAdd ? 'badge-info' : 'badge-success';
+        var sign = isRemove ? '' : '+';
+        var textClass = isRemove ? 'text-danger' : isAdd ? 'text-success' : 'text-success';
+        var typeLabel = isRemove ? 'Trừ tiền' : isAdd ? 'Cộng tiền' : 'Nạp tiền';
+        var codeDisplay = h.code || '';
+        
+        html += '<tr>';
+        html += '<td style="font-size:12px;color:#888;">' + h.time + '</td>';
+        html += '<td>' + h.username + '</td>';
+        html += '<td><span class="badge ' + badgeClass + '">' + typeLabel + '</span></td>';
+        html += '<td style="font-size:12px;">' + codeDisplay + '</td>';
+        html += '<td class="' + textClass + '">' + sign + formatMoney(Math.abs(h.amount)) + '</td>';
+        html += '</tr>';
+    }
+    html += '</table>';
+    document.getElementById('historyList').innerHTML = html;
+}
+
+function renderRemoveHistory() {
+    var removeHistory = getRemoveHistory();
+    if (removeHistory.length === 0) {
+        document.getElementById('removeHistoryList').innerHTML = '<div class="empty">Chưa có lịch sử trừ tiền.</div>';
+        return;
+    }
+    var html = '<table class="table"><tr><th>Thời gian</th><th>User</th><th>Số tiền</th><th>Lý do</th></tr>';
+    for (var i = removeHistory.length - 1; i >= 0; i--) {
+        var h = removeHistory[i];
+        html += '<tr>';
+        html += '<td style="font-size:12px;color:#888;">' + h.time + '</td>';
+        html += '<td>' + h.username + '</td>';
+        html += '<td class="text-danger">-' + formatMoney(h.amount) + '</td>';
+        html += '<td style="font-size:12px;color:#888;">' + h.reason + '</td>';
+        html += '</tr>';
+    }
+    html += '</table>';
+    document.getElementById('removeHistoryList').innerHTML = html;
+}
+
+function renderAddHistory() {
+    var addHistory = getAddHistory();
+    if (addHistory.length === 0) {
+        document.getElementById('addHistoryList').innerHTML = '<div class="empty">Chưa có lịch sử cộng tiền.</div>';
+        return;
+    }
+    var html = '<table class="table"><tr><th>Thời gian</th><th>User</th><th>Số tiền</th><th>Lý do</th></tr>';
+    for (var i = addHistory.length - 1; i >= 0; i--) {
+        var h = addHistory[i];
+        html += '<tr>';
+        html += '<td style="font-size:12px;color:#888;">' + h.time + '</td>';
+        html += '<td>' + h.username + '</td>';
+        html += '<td class="text-success">+' + formatMoney(h.amount) + '</td>';
+        html += '<td style="font-size:12px;color:#888;">' + h.reason + '</td>';
+        html += '</tr>';
+    }
+    html += '</table>';
+    document.getElementById('addHistoryList').innerHTML = html;
+}
+
+function renderAll() {
+    renderApprovals();
+    renderUsers();
+    renderHistory();
+    renderRemoveHistory();
+    renderAddHistory();
+    updateUserSelects();
+}
+
+// ===== TOAST =====
+function showToast(message, type) {
+    var oldToast = document.querySelector('.toast');
+    if (oldToast) oldToast.remove();
+    var toast = document.createElement('div');
+    toast.className = 'toast toast-' + type;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(function() {
+        toast.style.opacity = '0';
+        toast.style.transition = '0.3s';
+        setTimeout(function() { toast.remove(); }, 300);
+    }, 3000);
+}
+
+// ===== SWITCH TAB =====
+function switchTab(tabName) {
+    var tabs = document.querySelectorAll('.tab');
+    var contents = document.querySelectorAll('.tab-content');
+    for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
+    for (var i = 0; i < contents.length; i++) contents[i].classList.remove('active');
+    document.querySelector('.tab[onclick="switchTab(\'' + tabName + '\')"]').classList.add('active');
+    document.getElementById('tab-' + tabName).classList.add('active');
+    renderAll();
+}
+
+// ===== KHỞI CHẠY =====
+renderAll();
+setInterval(renderApprovals, 5000);
+
+console.log('🔑 Admin panel đã sẵn sàng!');
+console.log('📋 Có ' + getPendingApprovals().length + ' yêu cầu chờ duyệt.');
+console.log('➕ Đã thêm tab Cộng tiền!');
+</script>
+</body>
+</html>
