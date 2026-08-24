@@ -25,7 +25,7 @@ const ADMIN_CHAT_ID = "8362016205"; // <--- BẮT BUỘC THAY SỐ NÀY BẰNG I
 var products = [
   { id: 1, name: "Định vị nhân vật 2 lớp trắng xanh - Filza (anti band)", price: 25000, image: "images/dinhvi/dvitrangxanh.jpg", category: "dinhvi" },
   { id: 2, name: "Định vị nhân vật 2 lớp hồng cam - Filza (anti band)", price: 25000, image: "images/dinhvi/dvihongcam.jpg", category: "dinhvi" },
-  { id: 3, name: "Định vị nhân vật trắng - Filza (anti band)", price: 20000, image: "images/dinhvi/dvitrang.jpg", category: "dinhvi", fileUrl: "https://www.mediafire.com/file/7kc3tn7k2zge9zc/đvi+nv+trắng+By+TManhios.zip/file" },
+  { id: 3, name: "Định vị nhân vật trắng - Filza (anti band)", price: 20000, image: "images/dinhvi/dvitrang.jpg", category: "dinhvi", fileUrl: "https://www.mediafire.com/file/7kc3tn7k2ge9zc/dvi%20nv%20trang%20By%20TManhios.zip/file" },
   { id: 4, name: "Định vị nhân vật đỏ - Filza (anti band)", price: 20000, image: "images/dinhvi/dvido.jpg", category: "dinhvi" },
   { id: 5, name: "Định vị nhân vật xanh nước - Filza (anti band)", price: 20000, image: "images/dinhvi/dvixanhnuoc.jpg", category: "dinhvi" },
   { id: 6, name: "Định vị nhân vật xanh lá - Filza (anti band)", price: 20000, image: "images/dinhvi/dvixanhla.jpg", category: "dinhvi" },
