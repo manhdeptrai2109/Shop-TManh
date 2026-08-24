@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop TManh ios Vip</title>
+  <meta name="description" content="Shop TManh ios Vip - Uy tín, chất lượng, giá tốt">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Màn mưa -->
+  <canvas id="rainCanvas"></canvas>
+  <div class="ambient-glow"></div>
+
+  <header class="navbar">
+    <a class="brand" href="#home" aria-label="Shop TManh ios Vip">
+      <span class="brand-icon">🛒</span>
+      <span>Shop TManh ios Vip</span>
+    </a>
+
+    <nav class="nav-links">
+      <a class="active" href="#home">⌂ <span>Trang chủ</span></a>
+      <a href="#products">▦ <span>Sản phẩm</span></a>
+      <a href="#hot">♨ <span>Hot</span></a>
+      <a href="#about">ⓘ <span>Giới thiệu</span></a>
+      <a href="#" onclick="openContact(); return false;">▣ <span>Liên hệ</span></a>
+    </nav>
+
+    <div class="nav-actions">
+      <div class="search-box">
+        <input id="searchInput" type="search" placeholder="Tìm kiếm..." autocomplete="off">
+        <button id="searchBtn" aria-label="Tìm kiếm">⌕</button>
+      </div>
+      <button class="login-top" id="openLoginBtn" type="button">
+        👤 <span id="loginLabel">Đăng nhập</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="home">
+    <section class="hero">
+      <div class="moon"></div>
+      <div class="mountains mountains-back"></div>
+      <div class="mountains mountains-front"></div>
+      <div class="hero-content">
+        <p class="eyebrow">✦ CHÀO MỪNG BẠN ĐẾN SHOP ✦</p>
+        <h1>Chào mừng đến với <span>Shop TManh ios Vip</span></h1>
+        <div class="hero-line"><i></i><b>Uy tín - Chất lượng - Giá tốt</b><i></i></div>
+      </div>
+    </section>
+
+    <section class="shop-layout" id="products">
+      <div class="products-panel" style="grid-column:1/-1;">
+        <div class="section-title">
+          <div>
+            <span class="title-icon">♨</span>
+            <h2 id="categoryTitle">Tất cả sản phẩm</h2>
+          </div>
+          <a href="#products">Xem tất cả →</a>
+        </div>
+
+        <!-- Tab phân loại sản phẩm -->
+        <div class="category-tabs">
+          <button class="category-tab active" data-category="all" onclick="filterProducts('all')">📦 Tất cả</button>
+          <button class="category-tab" data-category="dinhvi" onclick="filterProducts('dinhvi')">📍 Định vị</button>
+          <button class="category-tab" data-category="fileaim" onclick="filterProducts('fileaim')">📁 File AIM</button>
+          <button class="category-tab" data-category="mod" onclick="filterProducts('mod')">🎮 Mod</button>
+        </div>
+
+        <div id="productGrid" class="product-grid"></div>
+        <p id="noProducts" class="no-products" hidden>Không tìm thấy sản phẩm.</p>
+      </div>
+    </section>
+
+    <section class="info-section" id="hot">
+      <div class="info-card">
+        <span>⚡</span>
+        <div><h3>Sản phẩm HOT</h3><p>Sản phẩm nổi bật được cập nhật liên tục.</p></div>
+      </div>
+      <div class="info-card" id="about">
+        <span>✓</span>
+        <div><h3>Uy tín</h3><p>Thông tin sản phẩm rõ ràng, giá bán minh bạch.</p></div>
+      </div>
+      <div class="info-card" id="contact">
+        <span>✉</span>
+        <div><h3>Liên hệ</h3><p>Nhấn vào menu <strong>"Liên hệ"</strong> để xem thông tin.</p></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal đăng nhập / đăng ký -->
+  <div class="modal" id="loginModal" aria-hidden="true">
+    <div class="modal-backdrop" id="closeLoginBackdrop"></div>
+    <div class="login-card">
+      <button class="modal-close" id="closeLoginBtn" type="button">×</button>
+
+      <div class="login-logo">👤</div>
+      <h2 id="authTitle">Đăng nhập</h2>
+      <p class="login-subtitle" id="authSubtitle">Đăng nhập để tiếp tục mua hàng</p>
+
+      <form id="authForm">
+        <!-- Đăng nhập -->
+        <div id="loginFields">
+          <label>
+            Tên hiển thị
+            <input id="loginNameInput" type="text" placeholder="Nhập tên hiển thị" required>
+          </label>
+          <label>
+            Mật khẩu
+            <input id="loginPasswordInput" type="password" placeholder="Nhập mật khẩu" required>
+          </label>
+        </div>
+
+        <!-- Đăng ký -->
+        <div id="registerFields" hidden>
+          <label>
+            Tên hiển thị
+            <input id="registerNameInput" type="text" placeholder="Nhập tên hiển thị" required>
+          </label>
+          <label>
+            Mật khẩu
+            <input id="registerPasswordInput" type="password" placeholder="Nhập mật khẩu" required>
+          </label>
+          <label>
+            Xác minh mật khẩu
+            <input id="registerConfirmInput" type="password" placeholder="Nhập lại mật khẩu" required>
+          </label>
+        </div>
+
+        <button class="gradient-btn login-submit" id="authSubmit" type="submit">Đăng nhập</button>
+      </form>
+
+      <p class="auth-message" id="authMessage"></p>
+
+      <button class="switch-auth" id="switchAuthBtn" type="button">
+        Chưa có tài khoản? <b>Đăng ký</b>
+      </button>
+
+      <button class="logout-btn" id="logoutBtn" type="button" hidden>Đăng xuất</button>
+    </div>
+  </div>
+
+  <!-- Modal Liên hệ -->
+  <div class="modal" id="contactModal" aria-hidden="true">
+    <div class="modal-backdrop" id="closeContactBackdrop"></div>
+    <div class="login-card contact-card">
+      <button class="modal-close" id="closeContactBtn" type="button">×</button>
+
+      <div style="text-align:center;font-size:40px;margin-bottom:6px;">📞</div>
+      <h2 style="text-align:center;margin:0 0 4px;font-size:21px;color:white;">Liên hệ</h2>
+      <p style="text-align:center;color:#8f9bd2;font-size:12px;margin:0 0 16px;">Thông tin liên hệ của shop</p>
+
+      <div style="background:#06082a;border:1px solid #4e3aa2;border-radius:12px;padding:14px;">
+        <div style="display:flex;align-items:center;gap:12px;padding:6px 0;border-bottom:1px solid #1a1a4a;">
+          <span style="font-size:18px;">👤</span>
+          <div>
+            <p style="color:#888;font-size:10px;margin:0;">Chủ shop</p>
+            <p style="color:white;font-size:14px;font-weight:bold;margin:0;">PHAM TIEN MANH</p>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:6px 0;border-bottom:1px solid #1a1a4a;">
+          <span style="font-size:18px;">📱</span>
+          <div>
+            <p style="color:#888;font-size:10px;margin:0;">Số điện thoại</p>
+            <p style="color:white;font-size:14px;font-weight:bold;margin:0;">0812 226 115</p>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:6px 0;border-bottom:1px solid #1a1a4a;">
+          <span style="font-size:18px;">📧</span>
+          <div>
+            <p style="color:#888;font-size:10px;margin:0;">Email</p>
+            <p style="color:white;font-size:14px;font-weight:bold;margin:0;">manhdeptraivocungluon@gmail.com</p>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;padding:6px 0;">
+          <span style="font-size:18px;">💳</span>
+          <div>
+            <p style="color:#888;font-size:10px;margin:0;">Ngân hàng</p>
+            <p style="color:white;font-size:14px;font-weight:bold;margin:0;">MB Bank - 08122261152109</p>
+          </div>
+        </div>
+      </div>
+
+      <button onclick="closeContact()" style="width:100%;margin-top:12px;padding:10px;background:linear-gradient(135deg,#6a3fff,#a855f7);color:white;border:none;border-radius:12px;font-size:14px;font-weight:bold;cursor:pointer;transition:0.3s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+        ✅ Đóng
+      </button>
+    </div>
+  </div>
+
+  <footer>
+    <span>♡</span> © 2026 Shop TManh ios Vip &nbsp;|&nbsp; Uy tín tạo nên thương hiệu <span>♥</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
