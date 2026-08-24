@@ -90,7 +90,7 @@
         <div class="card">
             <h2>🗑️ Trừ tiền khỏi tài khoản</h2>
             <div class="form-group" style="display:flex; gap:10px; flex-wrap:wrap;">
-                <select id="removeUserSelect" style="flex:1; padding:10px; background:#0b0d3b; border:1px solid #4e3aa2; border-radius:10px; color:white;">
+                <select id="removeUserSelect" style="flex:1; padding:10px; background:#0b0d3b; border:1px solid #4e3aa2; border-radius:10px; color:white; font-size:14px;">
                     <option value="">-- Chọn tài khoản --</option>
                 </select>
                 <input type="number" id="removeAmount" placeholder="Số tiền" style="flex:1; padding:10px; background:#0b0d3b; border:1px solid #4e3aa2; border-radius:10px; color:white;">
@@ -103,7 +103,7 @@
         <div class="card">
             <h2>➕ Cộng tiền vào tài khoản</h2>
             <div class="form-group" style="display:flex; gap:10px; flex-wrap:wrap;">
-                <select id="addUserSelect" style="flex:1; padding:10px; background:#0b0d3b; border:1px solid #4e3aa2; border-radius:10px; color:white;">
+                <select id="addUserSelect" style="flex:1; padding:10px; background:#0b0d3b; border:1px solid #4e3aa2; border-radius:10px; color:white; font-size:14px;">
                     <option value="">-- Chọn tài khoản --</option>
                 </select>
                 <input type="number" id="addAmount" placeholder="Số tiền" style="flex:1; padding:10px; background:#0b0d3b; border:1px solid #4e3aa2; border-radius:10px; color:white;">
@@ -230,12 +230,14 @@ function rejectRecharge(code) {
     renderAll();
 }
 
-// ===== TRỪ / CỘNG TIỀN =====
+// ===== TRỪ / CỘNG TIỀN (ĐÃ SỬA LỖI VÀ HIỂN THỊ SỐ DƯ) =====
 function updateSelects() {
     db.ref('balances').once('value').then(snapshot => {
         var html = '<option value="">-- Chọn tài khoản --</option>';
         snapshot.forEach(child => {
-            html += '<option value="' + child.key + '">' + child.key + '</option>';
+            var balance = child.val();
+            // Hiển thị số dư hiện tại trong ngoặc ở cuối tên
+            html += '<option value="' + child.key + '">' + child.key + ' (' + formatMoney(balance) + ')</option>';
         });
         document.getElementById('removeUserSelect').innerHTML = html;
         document.getElementById('addUserSelect').innerHTML = html;
@@ -248,12 +250,31 @@ function removeBalance() {
     if (!username || !amount) { showToast('⚠️ Nhập đầy đủ thông tin!', 'error'); return; }
     
     db.ref('balances/' + username).transaction((current) => {
-        if (current < amount) { alert('Số dư không đủ!'); return; }
-        return (current || 0) - amount;
+        var currentBalance = current || 0;
+        // LUÔN trả về giá trị (không dùng return;) để tránh hủy giao dịch
+        if (currentBalance >= amount) {
+            return currentBalance - amount;
+        } else {
+            return currentBalance; // Trả về số dư hiện tại (không thay đổi) để không bị hủy
+        }
+    }).then((result) => {
+        if (result.committed) {
+            db.ref('history/' + username).push({ code: 'TRỪ TIỀN', amount: -amount, time: new Date().toLocaleString('vi-VN'), type: 'remove' });
+            showToast('🗑️ Đã trừ tiền!', 'info');
+            document.getElementById('removeAmount').value = '';
+        } else {
+            // Nếu số dư hiện tại nhỏ hơn số tiền cần trừ, dữ liệu không thay đổi
+            // Nhưng chúng ta cần kiểm tra số dư hiện tại để báo lỗi
+            var currentRef = db.ref('balances/' + username);
+            currentRef.once('value').then(snap => {
+                var currentBal = snap.val() || 0;
+                if (currentBal < amount) {
+                    alert('⚠️ Số dư không đủ!');
+                }
+            });
+        }
+        renderAll();
     });
-    db.ref('history/' + username).push({ code: 'TRỪ TIỀN', amount: -amount, time: new Date().toLocaleString('vi-VN'), type: 'remove' });
-    showToast('🗑️ Đã trừ tiền!', 'info');
-    renderAll();
 }
 
 function addBalance() {
@@ -263,10 +284,14 @@ function addBalance() {
     
     db.ref('balances/' + username).transaction((current) => {
         return (current || 0) + amount;
+    }).then((result) => {
+        if (result.committed) {
+            db.ref('history/' + username).push({ code: 'CỘNG TIỀN', amount: amount, time: new Date().toLocaleString('vi-VN'), type: 'add' });
+            showToast('💰 Đã cộng tiền!', 'success');
+            document.getElementById('addAmount').value = '';
+        }
+        renderAll();
     });
-    db.ref('history/' + username).push({ code: 'CỘNG TIỀN', amount: amount, time: new Date().toLocaleString('vi-VN'), type: 'add' });
-    showToast('💰 Đã cộng tiền!', 'success');
-    renderAll();
 }
 
 // ===== SWITCH TAB =====
