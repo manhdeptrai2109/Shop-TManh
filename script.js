@@ -16,11 +16,11 @@ const db = firebase.database();
 
 // Cấu hình Telegram (Bot của bạn)
 const BOT_TOKEN = "8705622580:AAGzDcHlEqLvqxCOjT_napFipHfd9JTHx5I"; 
-const ADMIN_CHAT_ID = "8362016205"; // <--- BẮT BUỘC THAY SỐ NÀY BẰNG ID TELEGRAM CỦA BẠN!
+const ADMIN_CHAT_ID = "8362016205"; // ID Telegram của bạn
 
 
 // =============================================
-// DU LIEU SAN PHAM
+// DU LIEU SAN PHAM (ĐÃ SỬA ĐƯỜNG DẪN & MÃ HÓA LINK)
 // =============================================
 var products = [
   { id: 1, name: "Định vị nhân vật 2 lớp trắng xanh - Filza (anti band)", price: 25000, image: "images/dinhvi/dvitrangxanh.jpg", category: "dinhvi" },
@@ -31,13 +31,14 @@ var products = [
   { id: 6, name: "Định vị nhân vật xanh lá - Filza (anti band)", price: 20000, image: "images/dinhvi/dvixanhla.jpg", category: "dinhvi" },
   { id: 7, name: "Định vị nhân vật vàng - Filza (anti band)", price: 20000, image: "images/dinhvi/dvivang.jpg", category: "dinhvi" },
   
-  { id: 8, name: "File nhẹ tâm - Filza (cân rank)", price: 30000, image: "images/aim/nhetam.jpg", category: "fileaim", fileUrl: "https://www.mediafire.com/file/lufmc3gukni1681/nh%e1%ba%b9+t%c3%a2m+By+TManh+ios.zip/file" },
-  { id: 9, name: "File AIM Config V2 - Pro Settings", price: 20000, image: "images/aim/file aim v2.jpg", category: "fileaim" },
-  { id: 10, name: "File AIM Config V3 - Aimbot Extreme", price: 25000, image: "images/aim/file aim v3.jpg", category: "fileaim" },
+  // Link đã thay dấu + thành %20 (ĐÚNG)
+  { id: 8, name: "File nhẹ tâm - Filza (cân rank)", price: 30000, image: "images/aim/nhetam.jpg", category: "fileaim", fileUrl: "https://www.mediafire.com/file/lufmc3gukni1681/nh%E1%BA%B9%20t%C3%A2m%20By%20TManh%20ios.zip/file" },
+  { id: 9, name: "File AIM Config V2 - Pro Settings", price: 20000, image: "images/aim/file%20aim%20v2.jpg", category: "fileaim" },
+  { id: 10, name: "File AIM Config V3 - Aimbot Extreme", price: 25000, image: "images/aim/file%20aim%20v3.jpg", category: "fileaim" },
   
   { id: 11, name: "Mod M1887 Rồng Ender - Full Effects", price: 5000, image: "images/mod/modm1887ender.jpg", category: "mod" },
-  { id: 12, name: "Mod Skin Ninja - Legendary", price: 8000, image: "images/mod/mod skin ninja.jpg", category: "mod" },
-  { id: 13, name: "Mod Skin Samurai - Epic", price: 10000, image: "images/mod/mod skin samurai.jpg", category: "mod" }
+  { id: 12, name: "Mod Skin Ninja - Legendary", price: 8000, image: "images/mod/mod%20skin%20ninja.jpg", category: "mod" },
+  { id: 13, name: "Mod Skin Samurai - Epic", price: 10000, image: "images/mod/mod%20skin%20samurai.jpg", category: "mod" }
 ];
 
 function $(id) { return document.getElementById(id); }
@@ -52,14 +53,8 @@ function getProduct(id) {
 }
 
 // =============================================
-// LẤY SỐ DƯ TỪ FIREBASE (Thay vì localStorage)
+// LẤY SỐ DƯ TỪ FIREBASE
 // =============================================
-function getUserBalance(username) {
-  // Tạm thời trả về 0, sau đó sẽ cập nhật lại bằng hàm async bên dưới
-  return 0;
-}
-
-// Hàm bất đồng bộ lấy số dư thật từ Firebase
 function fetchBalanceFromFirebase(username, callback) {
   db.ref('balances/' + username).once('value').then((snapshot) => {
     var val = snapshot.val();
@@ -71,11 +66,10 @@ function fetchBalanceFromFirebase(username, callback) {
 // Hàm ghi số dư lên Firebase
 function setUserBalance(username, amount) {
   db.ref('balances/' + username).set(amount);
-  localStorage.setItem("shopCuaManhBalance_" + username, String(amount)); // Lưu tạm để tăng tốc UI
 }
 
 // =============================================
-// HỆ THỐNG MÃ NẠP (Không cần lưu ở máy khách nữa, gửi thẳng lên Firebase)
+// HỆ THỐNG MÃ NẠP
 // =============================================
 function generateRechargeCode() {
   var randomNum = Math.floor(Math.random() * 1000000).toString();
@@ -116,17 +110,14 @@ function completeRecharge(rechargeCode, amount) {
   var user = currentUser();
   if (!user) return;
 
-  // Lưu yêu cầu lên Firebase thay vì localStorage
   db.ref('pendingApprovals/').push({
     code: rechargeCode,
     username: user.name,
     amount: amount,
     time: new Date().toLocaleString('vi-VN')
   }).then(() => {
-    // Gửi lên Telegram cho Admin
     sendTelegramApproval(user.name, rechargeCode, amount);
     
-    // Đóng popup và hiện thông báo
     var overlay = document.querySelector(".custom-popup-overlay");
     if (overlay) document.body.removeChild(overlay);
     
@@ -137,7 +128,6 @@ function completeRecharge(rechargeCode, amount) {
     showPopup("Lỗi", "Không thể kết nối máy chủ. Vui lòng thử lại!", "error");
   });
 }
-
 
 // =============================================
 // XEM LỊCH SỬ (Lấy từ Firebase)
@@ -193,7 +183,7 @@ function getUserHistory() {
 }
 
 // =============================================
-// POPUP & HIỂN THỊ (Giữ nguyên như cũ)
+// POPUP & HIỂN THỊ
 // =============================================
 function showPopup(title, message, type, callback) {
   var oldPopup = document.querySelector(".custom-popup-overlay");
@@ -235,7 +225,7 @@ function showPopup(title, message, type, callback) {
 }
 
 // =============================================
-// CÁC HÀM CÒN LẠI (Giữ nguyên logic cũ)
+// CÁC HÀM HIỂN THỊ SẢN PHẨM
 // =============================================
 function escapeHtml(text) {
   return String(text).replace(/[&<>"']/g, function(c) {
@@ -285,7 +275,6 @@ function buyNow(productId) {
   var product = getProduct(productId);
   if (!product) return;
 
-  // Đọc số dư từ Firebase (Bất đồng bộ)
   fetchBalanceFromFirebase(user.name, function(balance) {
     if (balance < product.price) {
       showPopup("⚠️ Số dư không đủ!", "Bạn cần <strong style='color:#ff59e8;'>" + money(product.price) + "</strong> để mua sản phẩm này.<br>💰 Số dư hiện tại: <strong style='color:#51cf66;'>" + money(balance) + "</strong><br><br>Vui lòng nạp thêm tiền vào ví.", "error");
@@ -340,12 +329,11 @@ function selectRechargeAmount(amount) {
   if (!user) return;
 
   var rechargeCode = generateRechargeCode();
-  // Hiện popup thanh toán
   showRechargePopup(rechargeCode, amount);
 }
 
 // =============================================
-// POPUP NẠP TIỀN (Giữ nguyên)
+// POPUP NẠP TIỀN (ĐÃ SỬA TÊN FILE ẢNH)
 // =============================================
 function showRechargePopup(rechargeCode, amount) {
   var oldPopup = document.querySelector(".custom-popup-overlay");
@@ -522,6 +510,26 @@ logoutBtn.addEventListener("click", function() {
     }
   });
 });
+
+// =============================================
+// MODAL LIÊN HỆ (ĐÃ THÊM 2 HÀM NÀY)
+// =============================================
+function openContact() {
+  var modal = document.getElementById('contactModal');
+  if (modal) {
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+  return false;
+}
+
+function closeContact() {
+  var modal = document.getElementById('contactModal');
+  if (modal) {
+    modal.classList.remove('open');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+}
 
 // =============================================
 // CẬP NHẬT UI
