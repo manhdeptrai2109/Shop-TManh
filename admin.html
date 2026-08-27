@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản trị - Shop Của Mạnh</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: Arial, sans-serif; background: #0b0d3b; color: white; min-height: 100vh; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1 { text-align: center; margin-bottom: 30px; font-size: 28px; color: #a855f7; }
+        .card { background: #06082a; border: 1px solid #4e3aa2; border-radius: 16px; padding: 24px; margin-bottom: 20px; }
+        .card h2 { font-size: 18px; margin-bottom: 16px; color: #c8d0f5; }
+        .btn { padding: 10px 20px; border: none; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-success { background: #16a34a; color: white; }
+        .btn-danger { background: #dc2626; color: white; }
+        .btn-sm { padding: 5px 12px; font-size: 12px; }
+        .table { width: 100%; border-collapse: collapse; }
+        .table th { text-align: left; padding: 10px 8px; color: #888; font-size: 13px; border-bottom: 1px solid #4e3aa2; }
+        .table td { padding: 10px 8px; border-bottom: 1px solid #1a1a4a; font-size: 14px; }
+        .badge { padding: 3px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .badge-success { background: #16a34a; color: white; }
+        .badge-warning { background: #f59e0b; color: white; }
+        .text-warning { color: #ffd43b; }
+        .empty { text-align: center; color: #888; padding: 30px 0; }
+        
+        .tabs { display: flex; gap: 4px; margin-bottom: 16px; background: #0b0d3b; border-radius: 10px; padding: 4px; flex-wrap: wrap; }
+        .tab { flex: 1; padding: 10px; text-align: center; border: none; border-radius: 8px; background: transparent; color: #888; cursor: pointer; font-weight: bold; min-width: 80px; }
+        .tab.active { background: #1a1a5a; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .user-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #1a1a4a; }
+        .user-item:last-child { border-bottom: none; }
+        .user-name { font-weight: bold; font-size: 16px; }
+        .user-balance { font-size: 18px; font-weight: bold; color: #51cf66; }
+
+        .toast { position: fixed; top: 20px; right: 20px; padding: 16px 24px; border-radius: 12px; color: white; font-weight: bold; z-index: 9999; animation: slideIn 0.3s ease; max-width: 400px; }
+        .toast-success { background: #16a34a; }
+        .toast-error { background: #dc2626; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(100px); } to { opacity: 1; transform: translateX(0); } }
+
+        /* Phần đăng nhập */
+        .login-box { max-width: 350px; margin: 80px auto; text-align: center; }
+        .login-box input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #4e3aa2; border-radius: 10px; background: #06082a; color: white; }
+        .login-box button { width: 100%; padding: 12px; background: linear-gradient(135deg, #6a3fff, #a855f7); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; }
+        .hidden { display: none !important; }
+    </style>
+    
+    <!-- Thêm Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+</head>
+<body>
+
+<!-- Màn hình đăng nhập -->
+<div id="loginScreen" class="login-box">
+    <h1 style="color: white; margin-bottom: 20px;">🔑 Admin Login</h1>
+    <input type="password" id="adminPass" placeholder="Nhập mật khẩu quản trị">
+    <button onclick="checkLogin()">Đăng nhập</button>
+    <p id="loginMsg" style="color: red; margin-top: 10px;"></p>
+</div>
+
+<!-- Nội dung quản trị (Ẩn khi chưa đăng nhập) -->
+<div id="adminContent" class="container hidden">
+    <h1>🔑 Quản trị Shop Của Mạnh (Firebase)</h1>
+
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('approve')">✅ Duyệt nạp</button>
+        <button class="tab" onclick="switchTab('users')">👤 Danh sách user</button>
+        <button class="tab" onclick="switchTab('block')">🚫 Chặn nạp tiền</button>
+        <button class="tab" onclick="switchTab('ip')">📊 Theo dõi IP</button>
+        <button class="tab" onclick="switchTab('remove')">🗑️ Trừ tiền</button>
+        <button class="tab" onclick="switchTab('add')">➕ Cộng tiền</button>
+    </div>
+
+    <div id="tab-approve" class="tab-content active">
+        <div class="card">
+            <h2>📌 Yêu cầu nạp tiền chờ duyệt (Từ Telegram)</h2>
+            <div id="approvalList"><div class="empty">Không có yêu cầu nào đang chờ duyệt.</div></div>
+        </div>
+    </div>
+
+    <div id="tab-users" class="tab-content">
+        <div class="card">
+            <h2>👤 Danh sách tài khoản</h2>
+            <div id="userList"></div>
+        </div>
+    </div>
+
+    <div id="tab-block" class="tab-content">
+        <div class="card">
+            <h2>🚫 Chặn toàn hệ thống (Server)</h2>
+            <p style="margin-bottom: 15px; color: #c8d0f5;">Điền thời gian muốn chặn (Ngày, Giờ, Phút) rồi bấm "Bật chặn". Hệ thống sẽ tự hết chặn khi hết thời gian.</p>
+            
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
+                <div>
+                    <label style="font-size: 12px; color: #888;">Ngày (DD)</label>
+                    <input type="number" id="blockDays" placeholder="0" min="0" max="30" style="width: 80px; padding: 10px; background: #0b0d3b; border: 1px solid #4e3aa2; border-radius: 10px; color: white;">
+                </div>
+                <div>
+                    <label style="font-size: 12px; color: #888;">Giờ (HH)</label>
+                    <input type="number" id="blockHours" placeholder="0" min="0" max="23" style="width: 80px; padding: 10px; background: #0b0d3b; border: 1px solid #4e3aa2; border-radius: 10px; color: white;">
+                </div>
+                <div>
+                    <label style="font-size: 12px; color: #888;">Phút (MM)</label>
+                    <input type="number" id="blockMinutes" placeholder="0" min="0" max="59" style="width: 80px; padding: 10px; background: #0b0d3b; border: 1px solid #4e3aa2; border-radius: 10px; color: white;">
+                </div>
+                <button class="btn btn-danger" onclick="enableBlock()">🔒 Bật chặn</button>
+                <button class="btn btn-success" onclick="disableBlock()">🔓 Tắt chặn</button>
+            </div>
+            
+            <p id="blockStatus" style="margin-top: 15px; font-weight: bold; color: #51cf66;">Trạng thái: Đang mở (Không chặn)</p>
+        </div>
+
+        <div class="card">
+            <h2>🚫 Chặn riêng người dùng</h2>
+            <p style="margin-bottom: 15px; color: #c8d0f5;">Chọn tài khoản và nhập thời gian chặn. Tài khoản này sẽ không nạp tiền được trong thời gian đó. (Các tài khoản đang bị chặn sẽ có chữ "Đã chặn")</p>
+            
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;">
+                <select id="blockUserSelect" style="flex:1; padding:10px; background:#0b0d3b; border:1px solid #4e3aa2; border-radius:10px; color:white; font-size: 14px;">
+                    <option value="">-- Chọn tài khoản --</option>
+                </select>
+                <div>
+                    <label style="font-size: 12px; color: #888;">Giờ (HH)</label>
+                    <input type="number" id="blockUserHours" placeholder="0" min="0" max="23" style="width: 80px; padding: 10px; background: #0b0d3b; border: 1px solid #4e3aa2; border-radius: 10px; color: white;">
+                </div>
+                <div>
+                    <label style="font-size: 12px; color: #888;">Phút (MM)</label>
+                    <input type="number" id="blockUserMinutes" placeholder="0" min="0" max="59" style="width: 80px; padding: 10px; background: #0b0d3b; border: 1px solid #4e3aa2; border-radius: 10px; color: white;">
+                </div>
+                <button class="btn btn-danger" onclick="enableUserBlock()">🔒 Chặn người dùng</button>
+                <button class="btn btn-success" onclick="disableUserBlock()">🔓 Bỏ chặn</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-ip" class="tab-content">
+        <div class="card">
+            <h2>📊 Danh sách IP đã truy cập</h2>
+            <button class="btn btn-danger btn-sm" style="margin-bottom: 15px;" onclick="clearIPHistory()">🗑️ Xóa lịch sử IP</button>
+            <div id="ipList"><div class="empty">Chưa có IP nào được lưu.</div></div>
+        </div>
+    </div>
+
+    <div id="tab-remove" class="tab-content">
+        <div class="card">
+            <h2>🗑️ Trừ tiền khỏi tài khoản</h2>
+            <div class="form-group" style="display:flex; gap:10px; flex-wrap:wrap;">
+                <select id="removeUserSelect" style="flex:1; padding:10px; background:#0b0d3b; border:1px solid #4e3aa2; border-radius:10px; color:white;">
+                    <option value="">-- Chọn tài khoản --</option>
+                </select>
+                <input type="number" id="removeAmount" placeholder="Số tiền" style="flex:1; padding:10px; background:#0b0d3b; border:1px solid #4e3aa2; border-radius:10px; color:white;">
+                <button class="btn btn-danger" onclick="removeBalance()">🗑️ Trừ tiền</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-add" class="tab-content">
+        <div class="card">
+            <h2>➕ Cộng tiền vào tài khoản</h2>
+            <div class="form-group" style="display:flex; gap:10px; flex-wrap:wrap;">
+                <select id="addUserSelect" style="flex:1; padding:10px; background:#0b0d3b; border:1px solid #4e3aa2; border-radius:10px; color:white;">
+                    <option value="">-- Chọn tài khoản --</option>
+                </select>
+                <input type="number" id="addAmount" placeholder="Số tiền" style="flex:1; padding:10px; background:#0b0d3b; border:1px solid #4e3aa2; border-radius:10px; color:white;">
+                <button class="btn btn-success" onclick="addBalance()">➕ Cộng tiền</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// CẤU HÌNH FIREBASE
+const firebaseConfig = {
+  apiKey: "AIzaSyAYDQZx651Lhl8J_Yk4ifQCsE1TP6NhHiw",
+  authDomain: "tmanhiosvip.firebaseapp.com",
+  databaseURL: "https://tmanhiosvip-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "tmanhiosvip",
+  storageBucket: "tmanhiosvip.firebasestorage.app",
+  messagingSenderId: "724445930029",
+  appId: "1:724445930029:web:8690004fca2ea367d8cea4"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// MẬT KHẨU QUẢN TRỊ (ĐỔI CÁI NÀY THÀNH MẬT KHẨU CỦA BẠN)
+const ADMIN_PASSWORD = "Pmanh2109!";
+
+// Kiểm tra đăng nhập
+function checkLogin() {
+    var pass = document.getElementById('adminPass').value;
+    if (pass === ADMIN_PASSWORD) {
+        sessionStorage.setItem('isAdmin', 'true');
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('adminContent').classList.remove('hidden');
+        renderAll();
+        showToast('✅ Đăng nhập thành công!', 'success');
+    } else {
+        document.getElementById('loginMsg').textContent = '❌ Sai mật khẩu!';
+    }
+}
+
+// Tự động kiểm tra nếu đã đăng nhập
+window.onload = function() {
+    if (sessionStorage.getItem('isAdmin') === 'true') {
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('adminContent').classList.remove('hidden');
+        renderAll();
+    }
+};
+
+function formatMoney(n) { return n.toLocaleString('vi-VN') + 'đ'; }
+
+function showToast(message, type) {
+    var oldToast = document.querySelector('.toast'); if (oldToast) oldToast.remove();
+    var toast = document.createElement('div'); toast.className = 'toast toast-' + type; toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(function() { toast.style.opacity = '0'; toast.style.transition = '0.3s'; setTimeout(function() { toast.remove(); }, 300); }, 3000);
+}
+
+// ===== ĐỌC DỮ LIỆU TỪ FIREBASE =====
+function renderApprovals() {
+    db.ref('pendingApprovals').once('value').then((snapshot) => {
+        var html = '';
+        var index = 0;
+        snapshot.forEach((child) => {
+            var a = child.val();
+            html += '<tr>';
+            html += '<td>' + a.time + '</td>';
+            html += '<td><strong>' + a.username + '</strong></td>';
+            html += '<td><span class="badge badge-warning">' + a.code + '</span></td>';
+            html += '<td class="text-warning">' + formatMoney(a.amount) + '</td>';
+            html += '<td><button class="btn btn-success btn-sm" onclick="approveRecharge(\'' + a.code + '\')">✅ Duyệt</button> <button class="btn btn-danger btn-sm" onclick="rejectRecharge(\'' + a.code + '\')">❌ Từ chối</button></td>';
+            html += '</tr>';
+            index++;
+        });
+        if (index === 0) html = '<div class="empty">Không có yêu cầu nào đang chờ duyệt.</div>';
+        document.getElementById('approvalList').innerHTML = '<table class="table"><tr><th>Thời gian</th><th>User</th><th>Mã</th><th>Số tiền</th><th>Thao tác</th></tr>' + html + '</table>';
+    });
+}
+
+function renderUsers() {
+    db.ref('balances').once('value').then((snapshot) => {
+        var html = '';
+        snapshot.forEach((child) => {
+            var balance = child.val();
+            html += '<div class="user-item"><span class="user-name">👤 ' + child.key + '</span><span class="user-balance">💰 ' + formatMoney(balance) + '</span></div>';
+        });
+        document.getElementById('userList').innerHTML = html || '<div class="empty">Chưa có tài khoản nào.</div>';
+    });
+}
+
+// ===== ĐỌC DỮ LIỆU IP =====
+function renderIPList() {
+    db.ref('visitors').once('value').then((snapshot) => {
+        var html = '';
+        snapshot.forEach((child) => {
+            var v = child.val();
+            // CHỈ HIỂN THỊ IP CHÍNH (IPV4 số)
+            var ipDisplay = v.ip ? v.ip : 'Không có IP';
+            
+            html += '<tr>';
+            html += '<td>' + v.time + '</td>';
+            html += '<td><strong>' + ipDisplay + '</strong></td>';
+            html += '<td>' + v.country + ' - ' + v.city + '</td>';
+            html += '<td>' + v.user + '</td>';
+            html += '</tr>';
+        });
+        if (html === '') html = '<div class="empty">Chưa có IP nào được lưu.</div>';
+        document.getElementById('ipList').innerHTML = '<table class="table"><tr><th>Thời gian cập nhật</th><th>IP</th><th>Quốc gia/Thành phố</th><th>Người dùng</th></tr>' + html + '</table>';
+    });
+}
+
+// ===== XÓA LỊCH SỬ IP =====
+function clearIPHistory() {
+    if (confirm('Bạn có chắc muốn xóa toàn bộ lịch sử IP không?')) {
+        db.ref('visitors').remove();
+        renderIPList();
+        showToast('🗑️ Đã xóa toàn bộ lịch sử IP!', 'info');
+    }
+}
+
+// ===== CHẶN TOÀN HỆ THỐNG =====
+function enableBlock() {
+    var days = parseInt(document.getElementById('blockDays').value) || 0;
+    var hours = parseInt(document.getElementById('blockHours').value) || 0;
+    var minutes = parseInt(document.getElementById('blockMinutes').value) || 0;
+    
+    var totalMilliseconds = ((days * 24 * 60) + (hours * 60) + minutes) * 60 * 1000;
+    if (totalMilliseconds <= 0) {
+        alert('Vui lòng nhập thời gian chặn!');
+        return;
+    }
+    
+    var endTime = Date.now() + totalMilliseconds;
+    db.ref('settings/maintenance').set({ endTime: endTime });
+    
+    showToast('🔒 Đã bật chặn nạp tiền toàn hệ thống!', 'success');
+    renderBlockStatus();
+}
+
+function disableBlock() {
+    db.ref('settings/maintenance').remove();
+    showToast('🔓 Đã tắt chặn nạp tiền toàn hệ thống!', 'success');
+    renderBlockStatus();
+}
+
+function renderBlockStatus() {
+    db.ref('settings/maintenance').once('value').then((snapshot) => {
+        var block = snapshot.val();
+        if (block && block.endTime) {
+            var remaining = block.endTime - Date.now();
+            if (remaining > 0) {
+                var minutes = Math.floor(remaining / 60000);
+                var seconds = Math.floor((remaining % 60000) / 1000);
+                document.getElementById('blockStatus').textContent = 'Trạng thái: ĐANG CHẶN (Còn ' + minutes + ' phút ' + seconds + ' giây)';
+                document.getElementById('blockStatus').style.color = '#ff6b6b';
+            } else {
+                document.getElementById('blockStatus').textContent = 'Trạng thái: Đang mở (Không chặn)';
+                document.getElementById('blockStatus').style.color = '#51cf66';
+            }
+        } else {
+            document.getElementById('blockStatus').textContent = 'Trạng thái: Đang mở (Không chặn)';
+            document.getElementById('blockStatus').style.color = '#51cf66';
+        }
+    });
+}
+
+// ===== CHẶN RIÊNG NGƯỜI DÙNG =====
+function enableUserBlock() {
+    var username = document.getElementById('blockUserSelect').value;
+    var hours = parseInt(document.getElementById('blockUserHours').value) || 0;
+    var minutes = parseInt(document.getElementById('blockUserMinutes').value) || 0;
+    
+    if (!username) {
+        alert('Vui lòng chọn tài khoản!');
+        return;
+    }
+    
+    var totalMilliseconds = ((hours * 60) + minutes) * 60 * 1000;
+    if (totalMilliseconds <= 0) {
+        alert('Vui lòng nhập thời gian chặn!');
+        return;
+    }
+    
+    var endTime = Date.now() + totalMilliseconds;
+    db.ref('settings/blockedUsers/' + username).set({ endTime: endTime });
+    
+    showToast('🔒 Đã chặn tài khoản ' + username + '!', 'success');
+    updateBlockUserSelect();
+}
+
+function disableUserBlock() {
+    var username = document.getElementById('blockUserSelect').value;
+    if (!username) {
+        alert('Vui lòng chọn tài khoản!');
+        return;
+    }
+    
+    db.ref('settings/blockedUsers/' + username).remove();
+    showToast('🔓 Đã bỏ chặn tài khoản ' + username + '!', 'success');
+    updateBlockUserSelect();
+}
+
+function updateBlockUserSelect() {
+    Promise.all([
+        db.ref('balances').once('value'),
+        db.ref('settings/blockedUsers').once('value')
+    ]).then(([balancesSnap, blockedSnap]) => {
+        var html = '<option value="">-- Chọn tài khoản --</option>';
+        var blockedUsers = [];
+        blockedSnap.forEach(child => {
+            blockedUsers.push(child.key);
+        });
+        
+        balancesSnap.forEach(child => {
+            var username = child.key;
+            var isBlocked = blockedUsers.includes(username);
+            var blockText = isBlocked ? ' (Đã chặn)' : '';
+            html += '<option value="' + username + '">' + username + blockText + '</option>';
+        });
+        document.getElementById('blockUserSelect').innerHTML = html;
+    });
+}
+
+// ===== DUYỆT / TỪ CHỐI =====
+function approveRecharge(code) {
+    db.ref('pendingApprovals').orderByChild('code').equalTo(code).once('value').then(snapshot => {
+        snapshot.forEach(child => {
+            var req = child.val();
+            var username = req.username;
+            var amount = req.amount;
+            
+            db.ref('balances/' + username).transaction((current) => {
+                return (current || 0) + amount;
+            });
+            
+            child.ref.remove();
+            
+            db.ref('history/' + username).push({
+                code: code, amount: amount, time: new Date().toLocaleString('vi-VN'), type: 'nap'
+            });
+        });
+        showToast('✅ Đã duyệt và cộng tiền!', 'success');
+        renderAll();
+    });
+}
+
+function rejectRecharge(code) {
+    db.ref('pendingApprovals').orderByChild('code').equalTo(code).once('value').then(snapshot => {
+        snapshot.forEach(child => {
+            child.ref.remove();
+        });
+    });
+    showToast('❌ Đã từ chối!', 'error');
+    renderAll();
+}
+
+// ===== TRỪ / CỘNG TIỀN =====
+function updateSelects() {
+    db.ref('balances').once('value').then(snapshot => {
+        var html = '<option value="">-- Chọn tài khoản --</option>';
+        snapshot.forEach(child => {
+            var balance = child.val();
+            html += '<option value="' + child.key + '">' + child.key + ' (' + formatMoney(balance) + ')</option>';
+        });
+        document.getElementById('removeUserSelect').innerHTML = html;
+        document.getElementById('addUserSelect').innerHTML = html;
+        updateBlockUserSelect();
+    });
+}
+
+function removeBalance() {
+    var username = document.getElementById('removeUserSelect').value;
+    var amount = parseInt(document.getElementById('removeAmount').value);
+    if (!username || !amount) { showToast('⚠️ Nhập đầy đủ thông tin!', 'error'); return; }
+    
+    db.ref('balances/' + username).transaction((current) => {
+        var currentBalance = current || 0;
+        if (currentBalance >= amount) {
+            return currentBalance - amount;
+        } else {
+            return currentBalance;
+        }
+    }).then((result) => {
+        if (result.committed) {
+            db.ref('history/' + username).push({ code: 'TRỪ TIỀN', amount: -amount, time: new Date().toLocaleString('vi-VN'), type: 'remove' });
+            showToast('🗑️ Đã trừ tiền!', 'info');
+            document.getElementById('removeAmount').value = '';
+        } else {
+            var currentRef = db.ref('balances/' + username);
+            currentRef.once('value').then(snap => {
+                var currentBal = snap.val() || 0;
+                if (currentBal < amount) {
+                    alert('⚠️ Số dư không đủ!');
+                }
+            });
+        }
+        renderAll();
+    });
+}
+
+function addBalance() {
+    var username = document.getElementById('addUserSelect').value;
+    var amount = parseInt(document.getElementById('addAmount').value);
+    if (!username || !amount) { showToast('⚠️ Nhập đầy đủ thông tin!', 'error'); return; }
+    
+    db.ref('balances/' + username).transaction((current) => {
+        return (current || 0) + amount;
+    }).then((result) => {
+        if (result.committed) {
+            db.ref('history/' + username).push({ code: 'CỘNG TIỀN', amount: amount, time: new Date().toLocaleString('vi-VN'), type: 'add' });
+            showToast('💰 Đã cộng tiền!', 'success');
+            document.getElementById('addAmount').value = '';
+        }
+        renderAll();
+    });
+}
+
+// ===== SWITCH TAB =====
+function switchTab(tabName) {
+    var tabs = document.querySelectorAll('.tab');
+    var contents = document.querySelectorAll('.tab-content');
+    for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
+    for (var i = 0; i < contents.length; i++) contents[i].classList.remove('active');
+    document.querySelector('.tab[onclick="switchTab(\'' + tabName + '\')"]').classList.add('active');
+    document.getElementById('tab-' + tabName).classList.add('active');
+    renderAll();
+}
+
+function renderAll() {
+    renderApprovals();
+    renderUsers();
+    renderIPList();
+    renderBlockStatus();
+    updateSelects();
+}
+
+// KHỞI CHẠY (Chỉ chạy khi đã đăng nhập)
+setInterval(function() {
+    if (sessionStorage.getItem('isAdmin') === 'true') {
+        renderApprovals();
+        renderBlockStatus();
+    }
+}, 5000);
+</script>
+</body>
+</html>
