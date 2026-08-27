@@ -69,19 +69,19 @@ function setUserBalance(username, amount) {
 }
 
 // =============================================
-// LẤY IP NGƯỜI DÙNG VÀ LƯU LÊN FIREBASE
+// LẤY IP NGƯỜI DÙNG VÀ LƯU LÊN FIREBASE (ĐỔI SANG IPV4 SỐ)
 // =============================================
 function saveVisitorIP() {
-  // Gọi API lấy IP + Quốc gia + Thành phố chính xác
-  fetch('https://ipwho.is/')
+  // Dùng ip-api.com (chuyên trả về IPv4 - dạng số) - Không bao giờ bị IPv6
+  fetch('http://ip-api.com/json/?fields=status,message,country,city,query')
     .then(res => res.json())
     .then(data => {
-      if (!data.success) {
+      if (data.status !== 'success') {
         console.log('Không lấy được IP: ' + data.message);
         return;
       }
       
-      const ip = data.ip;
+      const ip = data.query; // IPv4 dạng số (ví dụ: 113.161.45.92)
       const country = data.country;
       const city = data.city;
       let username = "Khách";
