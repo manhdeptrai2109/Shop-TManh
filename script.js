@@ -19,7 +19,7 @@ const BOT_TOKEN = "8705622580:AAGzDcHlEqLvqxCOjT_napFipHfd9JTHx5I";
 const ADMIN_CHAT_ID = "8362016205"; // <--- ID Telegram của bạn
 
 // =============================================
-// DU LIEU SAN PHAM (ĐÃ SỬA TOÀN BỘ LINK)
+// DU LIEU SAN PHAM (ĐÃ MÃ HÓA CHUẨN)
 // =============================================
 var products = [
   { id: 1, name: "Định vị nhân vật 2 lớp trắng xanh - Filza (anti band)", price: 25000, image: "images/dinhvi/dvitrangxanh.jpg", category: "dinhvi", fileUrl: "https://www.mediafire.com/file/2dmu1rg6l37lw9j/%C4%91vi%20nv%202%20l%E1%BB%9Bp%20tr%E1%BA%AFng%20xanh.zip/file" },
@@ -416,7 +416,6 @@ function showRechargeOptions() {
   var modal = document.createElement("div");
   modal.style.cssText = `background: linear-gradient(145deg, #0b0d3b, #03051d);border: 1px solid #833cff;border-radius: 20px;padding: 24px;max-width: 420px;width: 92%;text-align: center;box-shadow: 0 0 50px rgba(112,30,255,0.5);`;
   
-  // Hiển thị các nút mệnh giá cố định
   var html = '<div style="font-size:40px;margin-bottom:6px;">💰</div><h2 style="color:white;margin:0 0 4px;font-size:20px;">Chọn số tiền nạp</h2><p style="color:#b0b8e0;margin:0 0 16px;font-size:13px;">Chọn mức tiền bạn muốn nạp vào ví</p><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;">';
   for (var i = 0; i < amounts.length; i++) {
     html += '<button onclick="selectRechargeAmount(' + amounts[i] + ')" style="padding:12px;background:linear-gradient(135deg,#6a3fff,#a855f7);border:none;border-radius:12px;color:white;font-size:15px;font-weight:bold;cursor:pointer;">' + money(amounts[i]) + '</button>';
@@ -430,26 +429,30 @@ function showRechargeOptions() {
   html += '<button onclick="submitCustomAmount()" style="width:100%;padding:12px;background:linear-gradient(135deg,#16a34a,#15803d);border:none;border-radius:12px;color:white;font-size:15px;font-weight:bold;cursor:pointer;">💸 Nạp số tiền tùy chỉnh</button>';
   html += '</div>';
   
-  // Nút đóng
   html += '<button onclick="closePopupOverlay(this)" style="width:100%;padding:10px;background:transparent;color:#888;border:1px solid #4e3aa2;border-radius:12px;font-size:14px;cursor:pointer;">❌ Đóng</button>';
   
   modal.innerHTML = html;
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
+}
+
+function closePopupOverlay(btn) { var overlay = btn.closest(".custom-popup-overlay"); if (overlay) document.body.removeChild(overlay); }
+
+function selectRechargeAmount(amount) {
+  var overlay = document.querySelector(".custom-popup-overlay");
+  if (overlay) document.body.removeChild(overlay);
+  var user = currentUser();
+  if (!user) return;
   
-  // Cho phép nhấn Enter để nạp nhanh
-  setTimeout(function() {
-    var input = document.getElementById('customAmountInput');
-    if (input) {
-      input.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          submitCustomAmount();
-        }
-      });
-      input.focus();
+  checkMaintenance(user.name, (isBlocked, message) => {
+    if (isBlocked) {
+      showPopup("🚫 Hệ thống đang bảo trì!", message, "error");
+      return;
     }
-  }, 100);
+    
+    var rechargeCode = generateRechargeCode();
+    showRechargePopup(rechargeCode, amount);
+  });
 }
 
 // Hàm xử lý khi người dùng nhập số tiền tùy chỉnh
