@@ -34,7 +34,7 @@ var products = [
   
   { id: 10, name: "Nhẹ tâm V1 - Filza", price: 30000, image: "images/aim/nhetamv1.jpg", category: "fileaim", fileUrl: "https://www.mediafire.com/file/lufmc3gukni1681/nh%E1%BA%B9%20t%C3%A2m%20By%20TManh%20ios.zip/file" },
   { id: 11, name: "Nhẹ tâm V2 - Filza (cân rank)", price: 40000, image: "images/aim/nhetamv2.jpg", category: "fileaim", fileUrl: "https://www.mediafire.com/file/e1d1vd05yh3mwi5/nhe%E1%BA%B7t%20%C3%A2m%20V2.zip/file" },
-{ id: 12, name: "Magic 10% đi kèo - Filza", price: 20000, image: "images/aim/magic10%.jpg", category: "fileaim", fileUrl: "https://www.mediafire.com/file/uwt6uga6e38jmjp/magic%2010%25%20%C4%91i%20k%C3%A8o.zip/file" },
+{ id: 12, name: "Magic 10% đi kèo - Filza", price: 20000, image: "images/aim/magic10.jpg", category: "fileaim", fileUrl: "https://www.mediafire.com/file/uwt6uga6e38jmjp/magic%2010%25%20%C4%91i%20k%C3%A8o.zip/file" },
 { id: 13, name: "Aimbody 85% safe rank - Filza", price: 20000, image: "images/aim/aimbody.jpg", category: "fileaim", fileUrl: "https://www.mediafire.com/file/jrxamda6i58hlqi/aimbody.zip/file" },
 
   { id: 14, name: "Mod M1887 Rồng Ender - Full Effects", price: 0, image: "images/mod/modm1887ender.jpg", category: "mod", fileUrl: "https://link4m.net/vkNHS8" },
