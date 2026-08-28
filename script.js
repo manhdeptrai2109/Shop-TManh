@@ -29,12 +29,14 @@ var products = [
   { id: 5, name: "Định vị nhân vật xanh nước - Filza (anti band)", price: 20000, image: "images/dinhvi/dvixanhnuoc.jpg", category: "dinhvi", fileUrl: "https://www.mediafire.com/file/az1mazzfob8hlgg/%C4%91vi%20nv%20xanh%20n%C6%B0%E1%BB%9Bc%20By%20TManhios.zip/file" },
   { id: 6, name: "Định vị nhân vật xanh lá - Filza (anti band)", price: 20000, image: "images/dinhvi/dvixanhla.jpg", category: "dinhvi", fileUrl: "https://www.mediafire.com/file/ke0ktvwa8pg5kv1/%C4%91vi%20nv%20xanh%20l%C3%A1%20By%20TManhios.zip/file" },
   { id: 7, name: "Định vị nhân vật vàng - Filza (anti band)", price: 20000, image: "images/dinhvi/dvivang.jpg", category: "dinhvi", fileUrl: "https://www.mediafire.com/file/2htw841k0s313hz/%C4%91vi%20nv%20v%C3%A0ng%20By%20TManhios.zip/file" },
+  { id: 8, name: "Định vị nhân vật đen - Filza (anti band)", price: 20000, image: "images/dinhvi/komau.jpg", category: "dinhvi", fileUrl: "https://www.mediafire.com/file/kow344wt57p857y/%C4%91vi%20nv%20%C4%91en%20By%20TManhios.zip/file" },
+  { id: 9, name: "Định vị nhân vật xanh nước nhạt - Filza (anti band)", price: 20000, image: "images/dinhvi/xanhnuocnhat.jpg", category: "dinhvi", fileUrl: "https://www.mediafire.com/file/6z1ih70nsmbjsy2/%C4%91vi%20nv%20xanh%20n%C6%B0%E1%BB%9Bc%20nh%E1%BA%A1t%20By%20TManhios.zip/file" },
   
-  { id: 8, name: "File nhẹ tâm V1 - Filza", price: 30000, image: "images/aim/nhetamv1.jpg", category: "fileaim", fileUrl: "https://www.mediafire.com/file/lufmc3gukni1681/nh%E1%BA%B9%20t%C3%A2m%20By%20TManh%20ios.zip/file" },
-  { id: 9, name: "File nhẹ tâm V2 - Filza (cân rank)", price: 40000, image: "images/aim/nhetamv2.jpg", category: "fileaim", fileUrl: "https://www.mediafire.com/file/e1d1vd05yh3mwi5/nhe%E1%BA%B7t%20%C3%A2m%20V2.zip/file" },
+  { id: 10, name: "File nhẹ tâm V1 - Filza", price: 30000, image: "images/aim/nhetamv1.jpg", category: "fileaim", fileUrl: "https://www.mediafire.com/file/lufmc3gukni1681/nh%E1%BA%B9%20t%C3%A2m%20By%20TManh%20ios.zip/file" },
+  { id: 11, name: "File nhẹ tâm V2 - Filza (cân rank)", price: 40000, image: "images/aim/nhetamv2.jpg", category: "fileaim", fileUrl: "https://www.mediafire.com/file/e1d1vd05yh3mwi5/nhe%E1%BA%B7t%20%C3%A2m%20V2.zip/file" },
    
-  { id: 10, name: "Mod M1887 Rồng Ender - Full Effects", price: 0, image: "images/mod/modm1887ender.jpg", category: "mod", fileUrl: "https://link4m.net/vkNHS8" },
-  { id: 11, name: "Mod M1887 Minecraft đỏ - Epic", price: 0, image: "images/mod/modm1887mcrdo.jpg", category: "mod", fileUrl: "https://link4m.net/0gHOD" }
+  { id: 12, name: "Mod M1887 Rồng Ender - Full Effects", price: 0, image: "images/mod/modm1887ender.jpg", category: "mod", fileUrl: "https://link4m.net/vkNHS8" },
+  { id: 13, name: "Mod M1887 Minecraft đỏ - Epic", price: 0, image: "images/mod/modm1887mcrdo.jpg", category: "mod", fileUrl: "https://link4m.net/0gHOD" }
 ];
 
 function $(id) { return document.getElementById(id); }
