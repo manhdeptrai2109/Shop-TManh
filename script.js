@@ -31,7 +31,7 @@ var products = [
   { id: 7, name: "Định vị nhân vật vàng - Filza (anti band)", price: 20000, image: "images/dinhvi/dvivang.jpg", category: "dinhvi", fileUrl: "https://www.mediafire.com/file/2htw841k0s313hz/%C4%91vi%20nv%20v%C3%A0ng%20By%20TManhios.zip/file" },
   
   { id: 8, name: "File nhẹ tâm V1 - Filza", price: 30000, image: "images/aim/nhetamv1.jpg", category: "fileaim", fileUrl: "https://www.mediafire.com/file/lufmc3gukni1681/nh%E1%BA%B9%20t%C3%A2m%20By%20TManh%20ios.zip/file" },
-  { id: 9, name: "File nhẹ tâm V2 - Filza (cân rank)", price: 40000, image: "images/aim/nhetamv2.jpg", category: "fileaim", fileUrl: "https://www.mediafire.com/file/1k2c1b4hh2vlqeq/nhe%E1%BA%B7t%20%C3%A2m%20By%20TManhios.zip/file" },
+  { id: 9, name: "File nhẹ tâm V2 - Filza (cân rank)", price: 40000, image: "images/aim/nhetamv2.jpg", category: "fileaim", fileUrl: "https://www.mediafire.com/file/e1d1vd05yh3mwi5/nhe%E1%BA%B7t%20%C3%A2m%20V2.zip/file},
    
   { id: 10, name: "Mod M1887 Rồng Ender - Full Effects", price: 0, image: "images/mod/modm1887ender.jpg", category: "mod", fileUrl: "https://link4m.net/vkNHS8" },
   { id: 11, name: "Mod M1887 Minecraft đỏ - Epic", price: 0, image: "images/mod/modm1887mcrdo.jpg", category: "mod", fileUrl: "https://link4m.net/0gHOD" }
